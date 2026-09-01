@@ -1,0 +1,208 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>BEAST-FIT AI - Macro Scanner</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700;1,800;1,900&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#454932",
+                        "on-primary-container": "#5d6b00",
+                        "tertiary": "#ffffff",
+                        "surface-container-low": "#1c1b1b",
+                        "on-error-container": "#ffdad6",
+                        "on-surface-variant": "#c6c9ab",
+                        "primary-fixed": "#d2f000",
+                        "tertiary-fixed": "#e5e2e1",
+                        "background": "#131313",
+                        "on-primary": "#2c3400",
+                        "primary": "#ffffff",
+                        "inverse-primary": "#576500",
+                        "on-secondary": "#68001a",
+                        "primary-container": "#d2f000",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "surface-container-highest": "#353534",
+                        "on-secondary-fixed": "#40000c",
+                        "inverse-on-surface": "#313030",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#e5e2e1",
+                        "inverse-surface": "#e5e2e1",
+                        "on-background": "#e5e2e1",
+                        "secondary": "#ffb3b6",
+                        "primary-fixed-dim": "#b8d300",
+                        "on-tertiary": "#303030",
+                        "on-primary-fixed": "#191e00",
+                        "surface": "#131313",
+                        "surface-container-high": "#2a2a2a",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "surface-variant": "#353534",
+                        "secondary-fixed": "#ffdada",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-container": "#656464",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "on-secondary-fixed-variant": "#920028",
+                        "on-error": "#690005",
+                        "secondary-container": "#c7003a",
+                        "on-surface": "#e5e2e1",
+                        "secondary-fixed-dim": "#ffb3b6",
+                        "outline": "#909378",
+                        "surface-tint": "#b8d300",
+                        "on-primary-fixed-variant": "#414c00",
+                        "on-secondary-container": "#ffd7d7",
+                        "surface-dim": "#131313",
+                        "surface-bright": "#3a3939",
+                        "surface-container": "#201f1f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "base": "4px",
+                        "md": "20px",
+                        "margin-mobile": "20px",
+                        "lg": "32px",
+                        "gutter": "16px",
+                        "xs": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Montserrat"],
+                        "headline-lg": ["Montserrat"],
+                        "body-sm": ["Inter"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "label-caps": ["JetBrains Mono"],
+                        "stat-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-xl": ["32px", { "lineHeight": "1.1", "fontWeight": "800" }],
+                        "headline-lg": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["20px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "stat-lg": ["28px", { "lineHeight": "1", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .camera-bracket {
+            width: 40px;
+            height: 40px;
+            border-color: #D0FF00;
+            position: absolute;
+        }
+        .bracket-tl { border-top: 4px solid; border-left: 4px solid; top: 0; left: 0; }
+        .bracket-tr { border-top: 4px solid; border-right: 4px solid; top: 0; right: 0; }
+        .bracket-bl { border-bottom: 4px solid; border-left: 4px solid; bottom: 0; left: 0; }
+        .bracket-br { border-bottom: 4px solid; border-right: 4px solid; bottom: 0; right: 0; }
+        
+        .glow-lime {
+            box-shadow: 0 0 15px rgba(210, 240, 0, 0.4);
+        }
+        .glass-panel {
+            background: rgba(28, 27, 27, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen relative overflow-hidden flex flex-col antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Camera Viewfinder Background -->
+<div class="absolute inset-0 z-0 bg-cover bg-center" data-alt="A top-down view of a healthy meal consisting of grilled chicken breast, white rice, and steamed broccoli on a dark slate plate, placed on a black textured surface. The lighting is dramatic and overhead, creating deep shadows and highlighting the textures of the food, embodying a clean, high-performance athletic aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDM22mzh8YZ99lSe4bzgrX2uicIu-V-AK_SMG8falEdljbgEot4W3ngzdyLHVZirYtTNqi27yEAgCk_GLaLFB89f_h0dzbSBUUbm2_TWQth0j6Xo1JgYZ4y8smOi4ACibJFJVP-tpaQbC_GCa0DUwOoaBSwnp2xBuPCcKDYlygVElGH9CS7jWxY9LcUPdnbh-je4C6dZuoWLOrBD-OgdJKQwtmNVs7ZJMENz0Lhv4dwHpgAkeNjlKY')">
+<div class="absolute inset-0 bg-black/40"></div>
+</div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-outline-variant flex justify-between items-center px-margin-mobile h-16">
+<button aria-label="Back" class="text-primary-fixed dark:text-primary-fixed hover:opacity-80 transition-opacity active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-black text-primary-fixed dark:text-primary-fixed italic tracking-widest uppercase">
+            AI Macro Scanner
+        </h1>
+<div class="flex items-center gap-4">
+<button aria-label="Toggle Flash" class="text-on-surface hover:text-primary-fixed transition-colors active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">bolt</span>
+</button>
+<button aria-label="Close" class="text-on-surface hover:text-primary-fixed transition-colors active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">close</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow relative z-10 pt-20 pb-safe flex flex-col justify-between">
+<!-- Mode Selector & AR Overlay Area -->
+<div class="px-margin-mobile flex flex-col items-center flex-grow pt-4"><div class="bg-surface-container-high/80 backdrop-blur-md rounded-full p-1 flex shadow-lg mb-8 border border-outline-variant"><button class="px-6 py-2 rounded-full font-label-caps text-label-caps bg-primary-fixed text-on-primary-fixed glow-lime transition-all flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">photo_camera</span>📸 Meal Photo</button><button class="px-6 py-2 rounded-full font-label-caps text-label-caps text-on-surface-variant hover:text-primary-fixed transition-all flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">barcode_scanner</span>Barcode Scanner</button></div><div class="relative w-64 h-64 mt-auto mb-auto scanning-active"><div class="camera-bracket bracket-tl"></div><div class="camera-bracket bracket-tr"></div><div class="camera-bracket bracket-bl"></div><div class="camera-bracket bracket-br"></div><div class="absolute inset-0 flex items-center justify-center"><div class="w-2 h-2 rounded-full bg-primary-fixed/50"></div></div></div><div class="w-full max-w-md mt-8 flex flex-col gap-3"><div class="flex justify-between items-end mb-0.5"><span class="font-label-caps text-label-caps text-primary-fixed tracking-widest">DETECTED ITEMS</span><button class="text-primary-fixed font-body-sm text-body-sm hover:underline flex items-center gap-1">Edit Items <span class="material-symbols-outlined text-sm">edit</span></button></div><div class="glass-panel border border-primary-fixed/30 rounded-xl p-4 flex flex-col gap-3 shadow-xl"><div class="flex items-center gap-3"><span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded font-bold text-[12px]"><span class="material-symbols-outlined text-[14px]">kebab_dining</span></span><span class="font-body-md text-primary">Chicken Breast • 220g <span class="text-primary-fixed font-bold">(68g Protein)</span></span></div><div class="h-px bg-outline-variant/30"></div><div class="flex items-center gap-3"><span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded font-bold text-[12px]"><span class="material-symbols-outlined text-[14px]">rice_bowl</span></span><span class="font-body-md text-primary">Jasmine Rice • 180g <span class="text-primary-fixed font-bold">(52g Carbs)</span></span></div><div class="h-px bg-outline-variant/30"></div><div class="flex items-center gap-3"><span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded font-bold text-[12px]"><span class="material-symbols-outlined text-[14px]">nutrition</span></span><span class="font-body-md text-primary">Broccoli • 85g</span></div></div></div></div>
+<!-- Nutrition Sheet (Bottom Card) -->
+<div class="bg-[#121215] rounded-t-[24px] border-t border-[#27272A] w-full p-margin-mobile flex flex-col gap-6 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] transform translate-y-0 transition-transform duration-300">
+<!-- Handle -->
+<div class="w-12 h-1 bg-surface-container-highest rounded-full mx-auto -mt-2 mb-2"></div>
+<!-- Header -->
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2 text-primary-fixed">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-label-caps text-label-caps">⚡ Gemini Vision AI • 96% Match Confidence</span>
+</div>
+
+</div>
+<!-- Calories -->
+<div class="flex items-baseline gap-4 flex-wrap">
+<div class="font-label-caps text-[10px] text-on-surface-variant tracking-widest uppercase mb-1 text-primary-fixed text-body-sm">Total for this meal</div><h2 class="font-black text-[48px] leading-none text-primary tracking-tighter text-headline-xl">680 KCAL</h2>
+<div class="bg-primary-fixed/20 text-primary-fixed px-2 py-1 rounded font-label-caps text-[10px] tracking-wider uppercase border border-primary-fixed/30 text-body-sm">
+                    +32% of daily goal
+                </div>
+</div>
+<!-- Macro Grid -->
+<div class="grid grid-cols-3 gap-4">
+<!-- Protein -->
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">PROTEIN</span>
+<span class="font-headline-lg text-headline-lg text-primary">68g</span>
+<div class="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-[85%] h-full bg-primary-fixed"></div>
+</div>
+</div>
+<!-- Carbs -->
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">CARBS</span>
+<span class="font-headline-lg text-headline-lg text-primary">52g</span>
+<div class="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-[60%] h-full bg-surface-variant"></div>
+</div>
+</div>
+<!-- Fats -->
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">FATS</span>
+<span class="font-headline-lg text-headline-lg text-primary">12g</span>
+<div class="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="w-[30%] h-full bg-secondary"></div>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col gap-4 mt-2">
+<button class="w-full bg-[#D0FF00] text-on-primary-fixed font-headline-lg-mobile text-headline-lg-mobile uppercase py-4 rounded-xl flex justify-center items-center gap-2 hover:bg-primary-fixed-dim transition-colors active:scale-95">
+                    LOG MEAL TO MACROS
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="w-full text-center text-on-surface-variant font-body-sm text-body-sm hover:text-primary transition-colors py-2">
+                    Retake Photo
+                </button>
+</div>
+</div>
+</main>
+
+
+</body></html>

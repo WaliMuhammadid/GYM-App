@@ -1,0 +1,168 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+model User {
+  id                 String           @id @default(uuid())
+  email              String           @unique
+  passwordHash       String
+  name               String?
+  role               String           @default("member") // "member" | "gym_admin"
+  createdAt          DateTime         @default(now())
+  units              String           @default("metric")
+  dailyCalorieTarget Int?             @default(2400)
+  dailyProteinTarget Int?             @default(180)
+  xp                 Int              @default(0)
+  level              Int              @default(1)
+  routines           Routine[]
+  workoutSessions    WorkoutSession[]
+  mealLogs           MealLog[]
+  coachMessages      CoachMessage[]
+  gymsOwned          Gym[]            @relation("GymOwner")
+  memberships        GymMembership[]
+  personalRecords    PersonalRecord[]
+  recoveryStates     MuscleRecoveryState[]
+  milestones         UserMilestone[]
+}
+
+model Gym {
+  id          String          @id @default(uuid())
+  name        String
+  ownerUserId String
+  owner       User            @relation("GymOwner", fields: [ownerUserId], references: [id])
+  memberships GymMembership[]
+}
+
+model GymMembership {
+  id             String    @id @default(uuid())
+  gymId          String
+  userId         String
+  status         String    @default("active") // "active" | "overdue" | "blocked"
+  planName       String
+  startedAt      DateTime  @default(now())
+  expiresAt      DateTime?
+  amountDueCents Int       @default(0)
+  lastPaymentAt  DateTime?
+  gym            Gym       @relation(fields: [gymId], references: [id])
+  user           User      @relation(fields: [userId], references: [id])
+}
+
+model Exercise {
+  id               String            @id @default(uuid())
+  name             String            @unique
+  muscleGroup      String
+  equipment        String?
+  formTip          String?
+  routineExercises RoutineExercise[]
+  setLogs          SetLog[]
+  personalRecords  PersonalRecord[]
+}
+
+model Routine {
+  id              String            @id @default(uuid())
+  userId          String
+  name            String
+  user            User              @relation(fields: [userId], references: [id])
+  exercises       RoutineExercise[]
+  workoutSessions WorkoutSession[]
+}
+
+model RoutineExercise {
+  id         String   @id @default(uuid())
+  routineId  String
+  exerciseId String
+  targetSets Int
+  targetReps Int
+  order      Int
+  routine    Routine  @relation(fields: [routineId], references: [id])
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+model WorkoutSession {
+  id          String    @id @default(uuid())
+  userId      String
+  routineId   String?
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  user        User      @relation(fields: [userId], references: [id])
+  routine     Routine?  @relation(fields: [routineId], references: [id])
+  setLogs     SetLog[]
+}
+
+model SetLog {
+  id          String         @id @default(uuid())
+  sessionId   String
+  exerciseId  String
+  setNumber   Int
+  weightKg    Float?
+  reps        Int
+  completedAt DateTime       @default(now())
+  session     WorkoutSession @relation(fields: [sessionId], references: [id])
+  exercise    Exercise       @relation(fields: [exerciseId], references: [id])
+}
+
+model PersonalRecord {
+  id         String   @id @default(uuid())
+  userId     String
+  exerciseId String
+  weightKg   Float
+  reps       Int
+  achievedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+model MuscleRecoveryState {
+  id          String   @id @default(uuid())
+  userId      String
+  muscleGroup String
+  status      String   @default("recovered") // "recovered" | "moderate" | "fatigued"
+  updatedAt   DateTime @default(now()) @updatedAt
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Milestone {
+  id                  String          @id @default(uuid())
+  key                 String          @unique
+  title               String
+  icon                String
+  criteriaDescription String
+  userMilestones      UserMilestone[]
+}
+
+model UserMilestone {
+  id          String    @id @default(uuid())
+  userId      String
+  milestoneId String
+  unlockedAt  DateTime? // null means locked
+  user        User      @relation(fields: [userId], references: [id])
+  milestone   Milestone @relation(fields: [milestoneId], references: [id])
+}
+
+model MealLog {
+  id                String   @id @default(uuid())
+  userId            String
+  rawInputText      String
+  loggedAt          DateTime @default(now())
+  estimatedCalories Int?
+  estimatedProteinG Int?
+  estimatedCarbsG   Int?
+  estimatedFatG     Int?
+  aiConfidenceNote  String?
+  isEstimate        Boolean  @default(true)
+  user              User     @relation(fields: [userId], references: [id])
+}
+
+model CoachMessage {
+  id        String   @id @default(uuid())
+  userId    String
+  role      String // "user" | "assistant"
+  content   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}

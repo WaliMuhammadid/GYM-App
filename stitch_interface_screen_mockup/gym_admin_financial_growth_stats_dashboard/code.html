@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BEAST-FIT AI - Financial Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;family=Montserrat:wght@400;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#ffb3b6",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "surface-container": "#201f1f",
+                        "primary-fixed": "#d2f000",
+                        "on-primary-fixed-variant": "#414c00",
+                        "on-error": "#690005",
+                        "outline": "#909378",
+                        "surface-tint": "#b8d300",
+                        "on-primary": "#2c3400",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-secondary-fixed-variant": "#920028",
+                        "surface-container-low": "#1c1b1b",
+                        "background": "#131313",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "on-background": "#e5e2e1",
+                        "primary-container": "#d2f000",
+                        "outline-variant": "#454932",
+                        "secondary": "#ffb3b6",
+                        "inverse-surface": "#e5e2e1",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-highest": "#353534",
+                        "inverse-primary": "#576500",
+                        "on-secondary-fixed": "#40000c",
+                        "primary": "#ffffff",
+                        "on-secondary": "#68001a",
+                        "surface": "#131313",
+                        "primary-fixed-dim": "#b8d300",
+                        "inverse-on-surface": "#313030",
+                        "on-primary-container": "#5d6b00",
+                        "on-tertiary": "#303030",
+                        "tertiary-fixed": "#e5e2e1",
+                        "on-tertiary-container": "#656464",
+                        "tertiary-container": "#e5e2e1",
+                        "on-secondary-container": "#ffd7d7",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary-fixed": "#ffdada",
+                        "surface-bright": "#3a3939",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#c7003a",
+                        "error-container": "#93000a",
+                        "surface-dim": "#131313",
+                        "on-primary-fixed": "#191e00",
+                        "surface-variant": "#353534",
+                        "tertiary": "#ffffff",
+                        "on-surface-variant": "#c6c9ab"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "32px",
+                        "margin-mobile": "20px",
+                        "xs": "8px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "md": "20px",
+                        "sm": "12px"
+                    },
+                    "fontFamily": {
+                        "stat-lg": ["Montserrat"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-xl": ["Montserrat"],
+                        "headline-lg": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg-mobile": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "stat-lg": ["28px", {"lineHeight": "1", "fontWeight": "800"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                        "headline-xl": ["32px", {"lineHeight": "1.1", "fontWeight": "800"}],
+                        "headline-lg": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["20px", {"lineHeight": "1.2", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #050505; color: #ffffff; }
+        .surface-card { background-color: #121215; border: 1px solid #27272A; }
+        .text-lime { color: #D0FF00; }
+        .bg-lime { background-color: #D0FF00; }
+        .border-lime { border-color: #D0FF00; }
+        .text-crimson { color: #FF2E54; }
+        .bg-crimson { background-color: #FF2E54; }
+        .bg-crimson-dim { background-color: rgba(255, 46, 84, 0.2); }
+        .glow-lime { box-shadow: 0 0 15px rgba(208, 255, 0, 0.4); }
+        .glass-panel { background: rgba(18, 18, 21, 0.8); backdrop-filter: blur(20px); border: 1px solid #27272A; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col font-body-md overflow-x-hidden pb-[90px]">
+<!-- TopAppBar JSON Blueprint -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-surface border-b border-outline-variant flex justify-between items-center px-margin-mobile h-16 w-full flat no shadows">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary-fixed dark:text-primary-fixed" data-weight="fill" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<div class="flex flex-col">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-black tracking-tighter text-primary-fixed dark:text-primary-fixed uppercase">IRON PULSE</h1>
+<span class="font-label-caps text-[10px] text-on-surface-variant uppercase">BEAST GYM DOWNTOWN ▾</span>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<div class="flex items-center gap-base text-on-surface-variant bg-[#1A1A1A] px-sm py-[6px] rounded-full border border-[#27272A]">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span class="font-label-caps text-[10px]">Aug 2026 ▾</span>
+</div>
+<div class="relative active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity">notifications</span>
+<span class="absolute -top-1 -right-1 bg-crimson text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">2</span>
+</div>
+</div>
+</header>
+<main class="flex-grow pt-[80px] px-margin-mobile flex flex-col gap-sm">
+<!-- Hero Revenue Growth Card -->
+<section class="surface-card rounded-[20px] p-gutter relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-tr from-[#050505] to-transparent opacity-50 z-0"></div>
+<div class="relative z-10">
+<h2 class="font-label-caps text-on-surface-variant mb-base">Total Revenue (Aug)</h2>
+<div class="flex items-end justify-between">
+<div class="font-headline-xl text-[32px] text-white">Rs. 145,000</div>
+<div class="bg-[rgba(208,255,0,0.15)] text-lime font-label-caps px-sm py-base rounded-full border border-[rgba(208,255,0,0.3)] flex items-center gap-[4px]">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+                        +18.4%
+                    </div>
+</div>
+</div>
+</section>
+<!-- 2-Column Grid -->
+<section class="grid grid-cols-2 gap-sm">
+<!-- Card 1 -->
+<div class="surface-card rounded-[20px] p-sm flex flex-col justify-between h-[120px]">
+<h3 class="font-label-caps text-on-surface-variant">PAID MEMBERS</h3>
+<div>
+<div class="font-headline-lg-mobile text-white mb-[4px]">142 <span class="text-on-surface-variant text-[16px] font-normal">/ 160</span></div>
+<div class="inline-block bg-[#1A1A1A] border border-outline-variant text-lime font-label-caps px-[8px] py-[4px] rounded-md text-[10px]">
+                        88.7% Paid
+                    </div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="surface-card rounded-[20px] p-sm flex flex-col justify-between h-[120px]">
+<h3 class="font-label-caps text-on-surface-variant">OVERDUE DUES</h3>
+<div>
+<div class="font-headline-lg-mobile text-white mb-[4px]">Rs. 18,000</div>
+<div class="inline-block bg-crimson-dim border border-[rgba(255,46,84,0.3)] text-crimson font-label-caps px-[8px] py-[4px] rounded-md text-[10px]">
+                        18 Pending
+                    </div>
+</div>
+</div>
+</section>
+<!-- Weekly Cash Inflow Chart -->
+<section class="surface-card rounded-[20px] p-gutter">
+<div class="flex justify-between items-center mb-gutter">
+<h2 class="font-label-caps text-on-surface-variant">Weekly Revenue Trend</h2>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">more_horiz</span>
+</div>
+<div class="h-[140px] flex items-end justify-between gap-[8px] mb-sm relative">
+<!-- Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20 z-0">
+<div class="w-full h-[1px] bg-outline-variant"></div>
+<div class="w-full h-[1px] bg-outline-variant"></div>
+<div class="w-full h-[1px] bg-outline-variant"></div>
+<div class="w-full h-[1px] bg-outline-variant"></div>
+</div>
+<!-- Bars -->
+<div class="w-full flex flex-col items-center gap-[8px] z-10 group cursor-pointer">
+<div class="w-full bg-[#1A1A1A] rounded-t-sm h-[40%] transition-all group-hover:bg-[#2A2A2A]"></div>
+<span class="font-label-caps text-[10px] text-on-surface-variant">W1</span>
+</div>
+<div class="w-full flex flex-col items-center gap-[8px] z-10 group cursor-pointer">
+<div class="w-full bg-[#1A1A1A] rounded-t-sm h-[65%] transition-all group-hover:bg-[#2A2A2A]"></div>
+<span class="font-label-caps text-[10px] text-on-surface-variant">W2</span>
+</div>
+<div class="w-full flex flex-col items-center gap-[8px] z-10 group cursor-pointer">
+<div class="w-full bg-[#1A1A1A] rounded-t-sm h-[50%] transition-all group-hover:bg-[#2A2A2A]"></div>
+<span class="font-label-caps text-[10px] text-on-surface-variant">W3</span>
+</div>
+<div class="w-full flex flex-col items-center gap-[8px] z-10 group cursor-pointer">
+<div class="w-full bg-lime rounded-t-sm h-[90%] glow-lime relative">
+<div class="absolute -top-[30px] left-1/2 -translate-x-1/2 bg-[#2A2A2A] text-white font-label-caps text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">Rs. 45k</div>
+</div>
+<span class="font-label-caps text-[10px] text-lime">W4</span>
+</div>
+</div>
+<div class="flex items-center gap-base text-on-surface-variant bg-[#1A1A1A] rounded-lg p-[8px]">
+<span class="material-symbols-outlined text-[16px] text-lime">analytics</span>
+<span class="font-body-sm text-[12px]">Average Daily Inflow: <strong class="text-white">Rs. 4,800/day</strong></span>
+</div>
+</section>
+<!-- Recent Counter Receipts (Audit Log) -->
+<section class="surface-card rounded-[20px] p-gutter flex-grow">
+<div class="flex items-center gap-base mb-gutter">
+<div class="w-2 h-2 rounded-full bg-lime animate-pulse"></div>
+<h2 class="font-label-caps text-white">Recent Receipts</h2>
+</div>
+<div class="flex flex-col gap-sm">
+<!-- Receipt Item 1 -->
+<div class="flex justify-between items-center p-sm bg-[#0E0E0E] rounded-lg border border-[#1A1A1A] hover:border-outline-variant transition-colors">
+<div class="flex gap-sm items-center">
+<div class="w-10 h-10 rounded-full bg-[#1A1A1A] flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</div>
+<div>
+<div class="font-body-sm font-bold text-white leading-tight">Alex Mercer</div>
+<div class="font-label-caps text-[10px] text-on-surface-variant mt-[2px]">Gold Plan • Today 02:45 PM</div>
+</div>
+</div>
+<div class="text-right flex flex-col items-end">
+<div class="font-headline-lg-mobile text-[16px] text-lime">+ Rs. 3,000</div>
+<div class="font-label-caps text-[9px] text-on-surface-variant bg-[#1A1A1A] px-[6px] py-[2px] rounded mt-[4px]">Cash Desk</div>
+</div>
+</div>
+<!-- Receipt Item 2 -->
+<div class="flex justify-between items-center p-sm bg-[#0E0E0E] rounded-lg border border-[#1A1A1A] hover:border-outline-variant transition-colors">
+<div class="flex gap-sm items-center">
+<div class="w-10 h-10 rounded-full bg-[#1A1A1A] flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</div>
+<div>
+<div class="font-body-sm font-bold text-white leading-tight">Sarah Malik</div>
+<div class="font-label-caps text-[10px] text-on-surface-variant mt-[2px]">Monthly Renewal • Today 11:15 AM</div>
+</div>
+</div>
+<div class="text-right flex flex-col items-end">
+<div class="font-headline-lg-mobile text-[16px] text-lime">+ Rs. 3,000</div>
+<div class="font-label-caps text-[9px] text-on-surface-variant bg-[#1A1A1A] px-[6px] py-[2px] rounded mt-[4px]">Cash Desk</div>
+</div>
+</div>
+</div>
+<button class="w-full mt-sm py-sm border border-[#27272A] rounded-lg font-label-caps text-on-surface-variant hover:text-white hover:bg-[#1A1A1A] transition-colors text-[12px] flex items-center justify-center gap-xs">
+                View Full Audit Log
+                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</section>
+</main>
+<!-- BottomNavBar JSON Blueprint -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container/80 dark:bg-surface-container/80 backdrop-blur-md border-t border-outline-variant shadow-lg md:hidden">
+<div class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-6">
+<!-- Inactive: Roster -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary-fixed transition-colors active:scale-90 transition-all duration-200">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-label-caps text-label-caps mt-1">Roster</span>
+</button>
+<!-- Active: Cash (Financial Analytics) -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl p-2 min-w-[64px] active:scale-90 transition-all duration-200">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="font-label-caps text-label-caps mt-1">Cash</span>
+</button>
+<!-- Inactive: Build -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary-fixed transition-colors active:scale-90 transition-all duration-200">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-label-caps text-label-caps mt-1">Build</span>
+</button>
+<!-- Inactive: Data -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary-fixed transition-colors active:scale-90 transition-all duration-200">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-label-caps text-label-caps mt-1">Data</span>
+</button>
+</div>
+</nav>
+</body></html>

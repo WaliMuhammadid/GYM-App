@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Member Operations</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Montserrat:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#5d6b00",
+                        "surface-bright": "#3a3939",
+                        "primary-container": "#d2f000",
+                        "on-secondary-container": "#ffd7d7",
+                        "on-secondary-fixed": "#40000c",
+                        "outline": "#909378",
+                        "surface-container": "#201f1f",
+                        "inverse-primary": "#576500",
+                        "secondary-fixed-dim": "#ffb3b6",
+                        "secondary-fixed": "#ffdada",
+                        "on-surface-variant": "#c6c9ab",
+                        "surface-tint": "#b8d300",
+                        "on-primary-fixed": "#191e00",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "inverse-on-surface": "#313030",
+                        "inverse-surface": "#e5e2e1",
+                        "tertiary": "#ffffff",
+                        "surface-variant": "#353534",
+                        "background": "#050505", /* Adjusted to pure pitch obsidian per prompt */
+                        "on-error-container": "#ffdad6",
+                        "surface-dim": "#131313",
+                        "on-secondary-fixed-variant": "#920028",
+                        "outline-variant": "#27272A", /* Crisp 1px borders */
+                        "tertiary-container": "#e5e2e1",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "on-primary": "#2c3400",
+                        "on-secondary": "#68001a",
+                        "on-tertiary-container": "#656464",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "surface": "#121215", /* Dark Charcoal for search/surface */
+                        "on-error": "#690005",
+                        "primary-fixed": "#d2f000",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "on-primary-fixed-variant": "#414c00",
+                        "tertiary-fixed": "#e5e2e1",
+                        "primary": "#d2f000", /* Electric Lime */
+                        "surface-container-low": "#1c1b1b",
+                        "primary-fixed-dim": "#b8d300",
+                        "on-surface": "#ffffff",
+                        "secondary": "#ffb3b6",
+                        "on-background": "#ffffff",
+                        "on-tertiary": "#303030",
+                        "secondary-container": "#c7003a",
+                        "surface-container-highest": "#353534",
+                        "surface-container-high": "#2a2a2a",
+                        "amber": "#FFC107",
+                        "fire-crimson": "#DC2626"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "14px", /* 14px-20px per prompt */
+                        "xl": "20px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "lg": "32px",
+                        "margin-mobile": "20px",
+                        "md": "20px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "xs": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter", "sans-serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "headline-xl": ["Montserrat", "sans-serif"],
+                        "headline-lg": ["Montserrat", "sans-serif"],
+                        "headline-lg-mobile": ["Montserrat", "sans-serif"],
+                        "label-caps": ["JetBrains Mono", "monospace"],
+                        "stat-lg": ["Montserrat", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "headline-xl": ["32px", { "lineHeight": "1.1", "fontWeight": "800" }],
+                        "headline-lg": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["20px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "stat-lg": ["28px", { "lineHeight": "1", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272A;
+            border-radius: 4px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col pb-24 md:pb-0 pt-16 selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar (Web & Mobile Hybrid Setup based on JSON) -->
+<header class="bg-background dark:bg-background fixed top-0 w-full z-50 border-b border-surface-variant flex justify-between items-center px-margin-mobile h-16 max-w-full">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary dark:text-primary">fitness_center</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-extrabold text-primary dark:text-primary tracking-tighter uppercase italic">IRON PULSE</h1>
+</div>
+<div class="hidden md:flex items-center gap-lg h-full">
+<nav class="flex gap-lg h-full">
+<a class="flex flex-col justify-center text-on-surface-variant font-label-caps text-label-caps hover:opacity-80 transition-opacity" href="#">STATS</a>
+<a class="flex flex-col justify-center text-primary-fixed font-bold font-label-caps text-label-caps hover:opacity-80 transition-opacity border-b-2 border-primary-fixed" href="#">MEMBERS</a>
+<a class="flex flex-col justify-center text-on-surface-variant font-label-caps text-label-caps hover:opacity-80 transition-opacity" href="#">ROUTINES</a>
+<a class="flex flex-col justify-center text-on-surface-variant font-label-caps text-label-caps hover:opacity-80 transition-opacity" href="#">SETTINGS</a>
+</nav>
+</div>
+<button class="text-on-background font-label-caps text-label-caps uppercase hover:opacity-80 transition-opacity active:scale-95 duration-150 flex items-center gap-xs">
+<span>Downtown Gym</span>
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+</header>
+<main class="flex-grow flex flex-col px-margin-mobile md:px-lg max-w-5xl mx-auto w-full mt-4 md:mt-8 gap-gutter">
+<!-- Header Section -->
+<div class="flex justify-between items-start md:items-end">
+<div class="flex flex-col gap-base">
+<h2 class="font-headline-lg text-headline-lg">Member Operations</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">160 Registered Athletes</p>
+</div>
+<button class="w-10 h-10 md:w-12 md:h-12 bg-primary text-on-primary rounded-full flex items-center justify-center hover:bg-primary-fixed-dim transition-colors active:scale-95 shadow-[0_0_15px_rgba(210,240,0,0.3)]">
+<span class="material-symbols-outlined fill">add</span>
+</button>
+</div>
+<!-- Search Bar -->
+<div class="relative w-full">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+</div>
+<input class="w-full bg-surface border border-outline-variant rounded-lg py-3 pl-12 pr-4 text-on-background placeholder-on-surface-variant focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-body-sm text-body-sm" placeholder="Search by Name, Phone Number, or ID..." type="text"/>
+</div>
+<!-- Filter Tabs -->
+<div class="flex overflow-x-auto hide-scrollbar gap-sm pb-2 -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0 mt-2">
+<button class="whitespace-nowrap px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-caps text-label-caps hover:border-on-surface transition-colors">
+                All (160)
+            </button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full border border-primary text-primary font-label-caps text-label-caps shadow-[0_0_10px_rgba(210,240,0,0.15)] bg-primary-container/10">
+                Paid / Active (142)
+            </button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant font-label-caps text-label-caps hover:border-on-surface transition-colors flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-fire-crimson"></span>
+                Overdue / Blocked (18)
+            </button>
+</div>
+<!-- Member List -->
+<div class="flex flex-col gap-sm mt-2">
+<!-- Row 1 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-4 flex items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center font-headline-lg-mobile text-headline-lg-mobile text-on-surface-variant shrink-0">JD</div>
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md font-bold">John Doe</span>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-fire-crimson"></span>
+<span class="font-body-sm text-body-sm text-fire-crimson">Blocked • Expired 4d ago</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="hidden md:block bg-primary text-on-primary font-label-caps text-label-caps px-4 py-2 rounded-lg uppercase font-bold hover:bg-primary-fixed-dim transition-colors">Pay &amp; Unlock</button>
+<button class="md:hidden w-8 h-8 flex items-center justify-center rounded-full bg-primary text-on-primary"><span class="material-symbols-outlined text-[16px]">payments</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full border border-outline-variant text-fire-crimson hover:bg-fire-crimson/10 transition-colors">
+<span class="material-symbols-outlined text-[18px]">block</span>
+</button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-4 flex items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center font-headline-lg-mobile text-headline-lg-mobile text-on-surface-variant shrink-0">AM</div>
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md font-bold">Alex Mercer</span>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="font-body-sm text-body-sm text-primary">Active • 24 Days Left</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="hidden md:block border border-outline-variant text-on-background font-label-caps text-label-caps px-4 py-2 rounded-lg uppercase font-bold hover:border-on-surface transition-colors">Renew</button>
+<button class="md:hidden w-8 h-8 flex items-center justify-center rounded-full border border-outline-variant text-on-background"><span class="material-symbols-outlined text-[16px]">autorenew</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full border border-outline-variant text-fire-crimson hover:bg-fire-crimson/10 transition-colors">
+<span class="material-symbols-outlined text-[18px]">block</span>
+</button>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-4 flex items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center font-headline-lg-mobile text-headline-lg-mobile text-on-surface-variant shrink-0">SM</div>
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md font-bold">Sarah Malik</span>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-amber"></span>
+<span class="font-body-sm text-body-sm text-amber">Due Tomorrow • Rs. 3,000</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="hidden md:block bg-primary text-on-primary font-label-caps text-label-caps px-4 py-2 rounded-lg uppercase font-bold hover:bg-primary-fixed-dim transition-colors">Collect Fee</button>
+<button class="md:hidden w-8 h-8 flex items-center justify-center rounded-full bg-primary text-on-primary"><span class="material-symbols-outlined text-[16px]">payments</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full border border-outline-variant text-fire-crimson hover:bg-fire-crimson/10 transition-colors">
+<span class="material-symbols-outlined text-[18px]">block</span>
+</button>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-4 flex items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center font-headline-lg-mobile text-headline-lg-mobile text-on-surface-variant shrink-0">MR</div>
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md font-bold">Mike Ross</span>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="font-body-sm text-body-sm text-primary">Active • 18 Days Left</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="hidden md:block border border-outline-variant text-on-background font-label-caps text-label-caps px-4 py-2 rounded-lg uppercase font-bold hover:border-on-surface transition-colors">Renew</button>
+<button class="md:hidden w-8 h-8 flex items-center justify-center rounded-full border border-outline-variant text-on-background"><span class="material-symbols-outlined text-[16px]">autorenew</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full border border-outline-variant text-fire-crimson hover:bg-fire-crimson/10 transition-colors">
+<span class="material-symbols-outlined text-[18px]">block</span>
+</button>
+</div>
+</div>
+<!-- Spacer for bottom nav on mobile -->
+<div class="h-8 md:hidden"></div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only based on JSON) -->
+<nav class="md:hidden bg-surface/80 dark:bg-surface/80 backdrop-blur-xl fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 h-20 z-50 border-t border-surface-variant">
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors active:scale-90 duration-200 gap-1 w-16">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-label-caps text-label-caps text-[10px]">STATS</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary-fixed dark:text-primary-fixed bg-primary-container/10 rounded-xl px-3 py-1 shadow-[0_0_15px_rgba(210,240,0,0.2)] hover:text-primary transition-colors active:scale-90 duration-200 gap-1 w-20">
+<span class="material-symbols-outlined fill">group</span>
+<span class="font-label-caps text-label-caps text-[10px]">MEMBERS</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors active:scale-90 duration-200 gap-1 w-16">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label-caps text-label-caps text-[10px]">ROUTINES</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors active:scale-90 duration-200 gap-1 w-16">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps text-[10px]">SETTINGS</span>
+</button>
+</nav>
+</body></html>
