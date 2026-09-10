@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "BeastFit AI",
-    "slug": "beastfit-gym-app",
+    "slug": "GYM",
+    "owner": "waliubit",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
@@ -23,6 +24,9 @@
       ]
     },
     "extra": {
+      "eas": {
+        "projectId": "fe1a20d1-8ef4-41b2-b238-9c5e0fb406cb"
+      },
       "defaultAppUrl": "http://192.168.100.12:3000"
     }
   }
