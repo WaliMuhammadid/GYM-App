@@ -14,8 +14,8 @@ import {
 import { WebView } from 'react-native-webview';
 import { StatusBar } from 'expo-status-bar';
 
-// Default URL: Can be your production deployed URL (Vercel) or your local network IP
-const DEFAULT_URL = 'http://192.168.100.12:3000';
+// Default URL: Production deployed URL on Vercel
+const DEFAULT_URL = 'https://gym-app-ten-lake.vercel.app';
 
 export default function App() {
   const [currentUrl, setCurrentUrl] = useState(DEFAULT_URL);
