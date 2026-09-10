@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -63,7 +63,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style=\"light\" backgroundColor=\"#050505\" />
+      <StatusBar style="light" backgroundColor="#050505" />
 
       {/* Main WebView */}
       <WebView
@@ -87,13 +87,13 @@ export default function App() {
         allowsBackForwardNavigationGestures={true}
         pullToRefreshEnabled={true}
         cacheEnabled={true}
-        userAgent=\"BeastFitMobileApp/1.0\"
+        userAgent="BeastFitMobileApp/1.0"
       />
 
       {/* Loading Overlay */}
       {isLoading && !hasError && (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size=\"large\" color=\"#D0FF00\" />
+          <ActivityIndicator size="large" color="#D0FF00" />
           <Text style={styles.loadingText}>BEASTFIT AI LOADING...</Text>
         </View>
       )}
@@ -106,8 +106,7 @@ export default function App() {
           </View>
           <Text style={styles.errorTitle}>CANNOT CONNECT TO SERVER</Text>
           <Text style={styles.errorDesc}>
-            Target URL: {currentUrl}\n\n
-            Make sure the server is running on this URL or update the connection address below.
+            {`Target URL: ${currentUrl}\n\nMake sure the server is running on this URL or update the connection address below.`}
           </Text>
 
           <TouchableOpacity style={styles.retryButton} onPress={handleReload}>
@@ -121,7 +120,7 @@ export default function App() {
       )}
 
       {/* Settings Modal to change URL */}
-      <Modal visible={showSettings} transparent={true} animationType=\"slide\">
+      <Modal visible={showSettings} transparent={true} animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>SERVER CONFIGURATION</Text>
@@ -132,9 +131,9 @@ export default function App() {
               style={styles.input}
               value={tempUrl}
               onChangeText={setTempUrl}
-              placeholder=\"https://your-domain.vercel.app\"
-              placeholderTextColor=\"#71717A\"
-              autoCapitalize=\"none\"
+              placeholder="https://your-domain.vercel.app"
+              placeholderTextColor="#71717A"
+              autoCapitalize="none"
               autoCorrect={false}
             />
             <View style={styles.modalButtons}>
