@@ -8,9 +8,9 @@ import {
   BackHandler,
   Platform,
   TextInput,
-  Modal,
-  SafeAreaView
+  Modal
 } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import { StatusBar } from 'expo-status-bar';
 
@@ -21,7 +21,7 @@ export default function App() {
   const [currentUrl, setCurrentUrl] = useState(DEFAULT_URL);
   const [tempUrl, setTempUrl] = useState(DEFAULT_URL);
   const [canGoBack, setCanGoBack] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const webViewRef = useRef(null);
@@ -44,7 +44,7 @@ export default function App() {
 
   const handleReload = () => {
     setHasError(false);
-    setIsLoading(true);
+    setIsInitialLoad(true);
     if (webViewRef.current) {
       webViewRef.current.reload();
     }
@@ -58,52 +58,51 @@ export default function App() {
     setCurrentUrl(formatted);
     setShowSettings(false);
     setHasError(false);
-    setIsLoading(true);
+    setIsInitialLoad(true);
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="light" backgroundColor="#050505" />
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <StatusBar style="light" backgroundColor="#050505" />
 
-      {/* Main WebView */}
-      <WebView
-        ref={webViewRef}
-        source={{ uri: currentUrl }}
-        style={styles.webview}
-        onNavigationStateChange={(navState) => {
-          setCanGoBack(navState.canGoBack);
-        }}
-        onLoadStart={() => setIsLoading(true)}
-        onLoadEnd={() => setIsLoading(false)}
-        onLoadProgress={({ nativeEvent }) => {
-          if (nativeEvent.progress > 0.7) {
-            setIsLoading(false);
-          }
-        }}
-        onError={() => {
-          setIsLoading(false);
-          setHasError(true);
-        }}
-        onHttpError={() => {
-          // If 404 or 500, still allow page to display if rendered by Next.js
-        }}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        sharedCookiesEnabled={true}
-        thirdPartyCookiesEnabled={true}
-        allowsBackForwardNavigationGestures={true}
-        pullToRefreshEnabled={true}
-        cacheEnabled={true}
-        userAgent="BeastFitMobileApp/1.0"
-      />
+        {/* Main WebView */}
+        <WebView
+          ref={webViewRef}
+          source={{ uri: currentUrl }}
+          style={styles.webview}
+          onNavigationStateChange={(navState) => {
+            setCanGoBack(navState.canGoBack);
+          }}
+          onLoadEnd={() => {
+            setIsInitialLoad(false);
+          }}
+          onLoadProgress={({ nativeEvent }) => {
+            if (nativeEvent.progress > 0.6) {
+              setIsInitialLoad(false);
+            }
+          }}
+          onError={() => {
+            setIsInitialLoad(false);
+            setHasError(true);
+          }}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          sharedCookiesEnabled={true}
+          thirdPartyCookiesEnabled={true}
+          allowsBackForwardNavigationGestures={true}
+          pullToRefreshEnabled={true}
+          cacheEnabled={true}
+          userAgent="BeastFitMobileApp/1.0"
+        />
 
-      {/* Loading Overlay */}
-      {isLoading && !hasError && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#D0FF00" />
-          <Text style={styles.loadingText}>BEASTFIT AI LOADING...</Text>
-        </View>
-      )}
+        {/* Loading Overlay (Only on cold start) */}
+        {isInitialLoad && !hasError && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#D0FF00" />
+            <Text style={styles.loadingText}>BEASTFIT AI LOADING...</Text>
+          </View>
+        )}
 
       {/* Connection Error Screen */}
       {hasError && (
@@ -161,6 +160,7 @@ export default function App() {
         </View>
       </Modal>
     </SafeAreaView>
+  </SafeAreaProvider>
   );
 }
 
