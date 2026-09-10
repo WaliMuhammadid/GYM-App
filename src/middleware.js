@@ -11,7 +11,7 @@ export async function middleware(request) {
     // If already logged in and trying to access login/register, redirect
     if (token && (pathname === '/login' || pathname === '/register')) {
       if (token.role === 'admin') {
-        return NextResponse.redirect(new URL('/admin', request.url));
+        return NextResponse.redirect(new URL('/admin/dashboard', request.url));
       }
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
@@ -22,7 +22,7 @@ export async function middleware(request) {
   if (pathname === '/') {
     if (token) {
       if (token.role === 'admin') {
-        return NextResponse.redirect(new URL('/admin', request.url));
+        return NextResponse.redirect(new URL('/admin/dashboard', request.url));
       }
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
