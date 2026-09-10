@@ -28,11 +28,10 @@ export default function Login() {
       setLoading(false);
     } else {
       if (email.toLowerCase().includes('admin')) {
-        router.push('/admin/dashboard');
+        window.location.href = '/admin/dashboard';
       } else {
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
       }
-      router.refresh();
     }
   };
 

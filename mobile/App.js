@@ -75,6 +75,11 @@ export default function App() {
         }}
         onLoadStart={() => setIsLoading(true)}
         onLoadEnd={() => setIsLoading(false)}
+        onLoadProgress={({ nativeEvent }) => {
+          if (nativeEvent.progress > 0.7) {
+            setIsLoading(false);
+          }
+        }}
         onError={() => {
           setIsLoading(false);
           setHasError(true);
@@ -84,6 +89,8 @@ export default function App() {
         }}
         javaScriptEnabled={true}
         domStorageEnabled={true}
+        sharedCookiesEnabled={true}
+        thirdPartyCookiesEnabled={true}
         allowsBackForwardNavigationGestures={true}
         pullToRefreshEnabled={true}
         cacheEnabled={true}
