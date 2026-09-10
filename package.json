@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "mobile:start": "cd mobile && npx expo start",
+    "mobile:build": "cd mobile && npx eas-cli build -p android --profile preview"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

@@ -1,0 +1,29 @@
+﻿{
+  "expo": {
+    "name": "BeastFit AI",
+    "slug": "beastfit-gym-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#050505"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.walimuhammad.beastfit"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#050505"
+      },
+      "package": "com.walimuhammad.beastfit",
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
+    },
+    "extra": {
+      "defaultAppUrl": "http://192.168.100.12:3000"
+    }
+  }
+}
