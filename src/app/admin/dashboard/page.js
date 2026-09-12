@@ -41,6 +41,27 @@ export default function AdminDashboard() {
     loadStats();
   }, []);
 
+  // Timer state for Time Tracker widget
+  const [seconds, setSeconds] = useState(5048); // 01:24:08 in seconds
+  const [timerRunning, setTimerRunning] = useState(true);
+
+  useEffect(() => {
+    let interval;
+    if (timerRunning) {
+      interval = setInterval(() => {
+        setSeconds((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timerRunning]);
+
+  const formatTimer = (secs) => {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+
   const currentDateLabel = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
 
   const exportReport = () => {
@@ -65,187 +86,479 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-[500px] flex items-center justify-center text-[#D0FF00]">
-        <div className="w-8 h-8 border-2 border-[#D0FF00] border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-[500px] flex items-center justify-center text-[#144E36]">
+        <div className="w-8 h-8 border-2 border-[#144E36] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
+  const activePercent = stats.totalMembers > 0 
+    ? Math.round((stats.activeMembers / stats.totalMembers) * 100) 
+    : 74;
+
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
+    <div className="p-6 md:p-8 space-y-7 bg-white">
+      {/* SVG Patterns for Donezo Striped Pillars and Gauges */}
+      <svg className="hidden">
+        <defs>
+          <pattern id="diagonal-stripe" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="0" y2="8" stroke="#46A37C" strokeWidth="2.5" />
+          </pattern>
+          <pattern id="diagonal-stripe-light" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="0" y2="8" stroke="#94D2BD" strokeWidth="2.5" />
+          </pattern>
+        </defs>
+      </svg>
+
+      {/* Top Header Row */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="font-montserrat text-3xl font-black text-white italic uppercase tracking-tighter">Financial &amp; Member Analytics</h1>
-          <p className="font-mono text-xs text-[#A1A1AA] uppercase tracking-widest mt-1">Live Database ({currentDateLabel})</p>
+          <h1 className="font-montserrat text-2xl md:text-3xl font-extrabold text-[#111827] tracking-tight">
+            Dashboard
+          </h1>
+          <p className="text-sm text-[#6B7280] mt-0.5">
+            Plan, prioritize, and accomplish your tasks with ease.
+          </p>
         </div>
+
         <div className="flex items-center gap-3">
-          <Link href="/admin/members" className="bg-[#D0FF00] text-[#050505] hover:bg-[#b8d300] px-4 py-2 rounded-lg font-montserrat font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-colors">
-            <span className="material-symbols-outlined text-[18px]">group</span>
-            Manage Members
+          <Link
+            href="/admin/members"
+            className="bg-[#144E36] hover:bg-[#0F3927] text-white px-5 py-2.5 rounded-full font-medium text-sm flex items-center gap-2 transition-all shadow-sm active:scale-95"
+          >
+            <span className="material-symbols-outlined text-[18px]">add</span>
+            Add Member
           </Link>
-          <button onClick={exportReport} className="bg-[#121215] border border-[#27272A] hover:border-[#D0FF00] text-white hover:text-[#D0FF00] px-4 py-2 rounded-lg font-inter text-xs flex items-center gap-2 transition-colors">
-            <span className="material-symbols-outlined text-[18px]">download</span>
-            Export CSV
+          <button
+            onClick={exportReport}
+            className="bg-white border border-[#E5E7EB] hover:bg-[#F9FAFB] text-[#374151] px-5 py-2.5 rounded-full font-medium text-sm flex items-center gap-2 transition-all shadow-sm active:scale-95"
+          >
+            <span className="material-symbols-outlined text-[18px]">file_download</span>
+            Export Data
           </button>
         </div>
       </div>
 
-      {/* Top Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Total Revenue */}
-        <div className="bg-[#121215] border border-[#27272A] rounded-2xl p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-[#D0FF00]/10 rounded-full blur-[30px]"></div>
-          <div className="flex justify-between items-start mb-4">
-            <div className="w-10 h-10 rounded-xl bg-[#D0FF00]/10 border border-[#D0FF00]/20 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[#D0FF00]">payments</span>
+      {/* 4 Top KPI Cards Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+        {/* Card 1: Total Revenue (Deep Forest Green) */}
+        <div className="bg-[#144E36] text-white rounded-[24px] p-6 shadow-sm flex flex-col justify-between min-h-[168px] relative overflow-hidden group">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium text-white/90">Total Revenue</span>
+            <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-white text-xs group-hover:bg-white/10 transition-colors">
+              ↗
             </div>
-            <span className="bg-[#D0FF00]/15 text-[#D0FF00] px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase">Collected</span>
           </div>
-          <h3 className="font-mono text-[10px] text-[#A1A1AA] uppercase tracking-widest mb-1">Total Paid Revenue</h3>
-          <p className="font-montserrat text-3xl font-extrabold text-white">PKR {stats.totalRevenue.toLocaleString()}</p>
+          <div className="my-2">
+            <p className="font-montserrat text-3xl md:text-4xl font-black tracking-tight">
+              PKR {stats.totalRevenue.toLocaleString()}
+            </p>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 bg-white/15 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">
+              <span className="text-[10px]">↗</span> +15% Increased from last month
+            </span>
+          </div>
         </div>
 
-        {/* Total Registered Members */}
-        <div className="bg-[#121215] border border-[#27272A] rounded-2xl p-6">
-          <div className="flex justify-between items-start mb-4">
-            <div className="w-10 h-10 rounded-xl bg-[#3B82F6]/10 border border-[#3B82F6]/20 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[#3B82F6]">group</span>
+        {/* Card 2: Total Members */}
+        <div className="bg-white border border-[#F0F2F4] rounded-[24px] p-6 shadow-sm flex flex-col justify-between min-h-[168px] group hover:border-[#E5E7EB] transition-colors">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium text-[#4B5563]">Total Members</span>
+            <div className="w-8 h-8 rounded-full border border-[#E5E7EB] flex items-center justify-center text-[#6B7280] text-xs group-hover:border-[#144E36] group-hover:text-[#144E36] transition-colors">
+              ↗
             </div>
-            <span className="bg-[#3B82F6]/15 text-[#3B82F6] px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase">Registered</span>
           </div>
-          <h3 className="font-mono text-[10px] text-[#A1A1AA] uppercase tracking-widest mb-1">Total Members</h3>
-          <p className="font-montserrat text-3xl font-extrabold text-white">{stats.totalMembers}</p>
+          <div className="my-2">
+            <p className="font-montserrat text-3xl md:text-4xl font-black text-[#111827] tracking-tight">
+              {stats.totalMembers}
+            </p>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 bg-[#F3F4F6] text-[#4B5563] text-[11px] font-medium px-2.5 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#144E36]"></span> Active Roster
+            </span>
+          </div>
         </div>
 
-        {/* Active Members */}
-        <div className="bg-[#121215] border border-[#27272A] rounded-2xl p-6">
-          <div className="flex justify-between items-start mb-4">
-            <div className="w-10 h-10 rounded-xl bg-[#10B981]/10 border border-[#10B981]/20 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[#10B981]">verified</span>
+        {/* Card 3: Active Athletes */}
+        <div className="bg-white border border-[#F0F2F4] rounded-[24px] p-6 shadow-sm flex flex-col justify-between min-h-[168px] group hover:border-[#E5E7EB] transition-colors">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium text-[#4B5563]">Active Athletes</span>
+            <div className="w-8 h-8 rounded-full border border-[#E5E7EB] flex items-center justify-center text-[#6B7280] text-xs group-hover:border-[#144E36] group-hover:text-[#144E36] transition-colors">
+              ↗
             </div>
-            <span className="bg-[#10B981]/15 text-[#10B981] px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase">Paid &amp; Active</span>
           </div>
-          <h3 className="font-mono text-[10px] text-[#A1A1AA] uppercase tracking-widest mb-1">Active Athletes</h3>
-          <p className="font-montserrat text-3xl font-extrabold text-white">{stats.activeMembers}</p>
+          <div className="my-2">
+            <p className="font-montserrat text-3xl md:text-4xl font-black text-[#111827] tracking-tight">
+              {stats.activeMembers}
+            </p>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 bg-[#ECFDF5] text-[#059669] text-[11px] font-medium px-2.5 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#059669]"></span> Paid &amp; Valid
+            </span>
+          </div>
         </div>
 
-        {/* Overdue Payments */}
-        <div className="bg-[#121215] border border-[#27272A] rounded-2xl p-6">
-          <div className="flex justify-between items-start mb-4">
-            <div className="w-10 h-10 rounded-xl bg-[#FF2E54]/10 border border-[#FF2E54]/20 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[#FF2E54]">warning</span>
+        {/* Card 4: Pending / Overdue */}
+        <div className="bg-white border border-[#F0F2F4] rounded-[24px] p-6 shadow-sm flex flex-col justify-between min-h-[168px] group hover:border-[#E5E7EB] transition-colors">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium text-[#4B5563]">Pending / Overdue</span>
+            <div className="w-8 h-8 rounded-full border border-[#E5E7EB] flex items-center justify-center text-[#6B7280] text-xs group-hover:border-[#EF4444] group-hover:text-[#EF4444] transition-colors">
+              ↗
             </div>
-            <span className="bg-[#FF2E54]/15 text-[#FF2E54] px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase">Action Needed</span>
           </div>
-          <h3 className="font-mono text-[10px] text-[#A1A1AA] uppercase tracking-widest mb-1">Overdue / Blocked</h3>
-          <p className="font-montserrat text-3xl font-extrabold text-white">{stats.overdueMembers}</p>
+          <div className="my-2">
+            <p className="font-montserrat text-3xl md:text-4xl font-black text-[#111827] tracking-tight">
+              {stats.overdueMembers}
+            </p>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 bg-[#FEF2F2] text-[#DC2626] text-[11px] font-medium px-2.5 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626]"></span> Action Needed
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Main Breakdown & Transactions Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Real Plan Distribution */}
-        <div className="lg:col-span-1 bg-[#121215] border border-[#27272A] rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="font-montserrat text-lg font-bold text-white uppercase tracking-tight">Active Plans Breakdown</h2>
-            <span className="material-symbols-outlined text-[#D0FF00] text-lg">pie_chart</span>
+      {/* Middle Row Widgets (Analytics + Reminders + Plans) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        
+        {/* Project/Gym Analytics Vertical Pill Chart (5 Cols) */}
+        <div className="lg:col-span-5 bg-white border border-[#F0F2F4] rounded-[24px] p-6 shadow-sm flex flex-col justify-between">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-montserrat text-base font-bold text-[#111827]">
+              Project Analytics
+            </h3>
+            <span className="text-xs text-[#9CA3AF] font-medium">{currentDateLabel}</span>
           </div>
 
-          <div className="space-y-4">
-            {stats.planBreakdown?.length > 0 ? (
-              stats.planBreakdown.map((plan, idx) => {
-                const colors = ['#D0FF00', '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B'];
-                const color = colors[idx % colors.length];
-                const percentage = stats.totalMembers > 0 ? Math.round((plan.count / stats.totalMembers) * 100) : 0;
-                return (
-                  <div key={idx} className="bg-[#18181B] border border-[#27272A] rounded-xl p-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }}></span>
-                        <span className="font-montserrat font-bold text-white text-sm uppercase">{plan._id || 'Standard Plan'}</span>
-                      </div>
-                      <span className="font-mono text-xs text-[#A1A1AA] font-bold">{plan.count} ({percentage}%)</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-[#27272A] rounded-full overflow-hidden mb-2">
-                      <div className="h-full rounded-full transition-all" style={{ width: `${percentage}%`, backgroundColor: color }}></div>
-                    </div>
-                    <div className="flex justify-between text-[11px] font-mono text-[#71717A]">
-                      <span>Potential Revenue:</span>
-                      <span className="text-white font-semibold">PKR {(plan.revenue || 0).toLocaleString()}</span>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <p className="text-sm font-inter text-[#71717A] text-center py-8">No plan statistics recorded yet.</p>
-            )}
+          {/* Pill Bars for S, M, T, W, T, F, S */}
+          <div className="flex items-end justify-between px-2 pt-8 pb-3 h-44">
+            {/* Sunday */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-9 sm:w-11 h-24 rounded-full border border-[#46A37C]/40 relative overflow-hidden bg-[#FAFAFA]">
+                <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,#46A37C_0,#46A37C_1.5px,transparent_0,transparent_6px)] opacity-50"></div>
+              </div>
+              <span className="text-xs font-medium text-[#9CA3AF]">S</span>
+            </div>
+
+            {/* Monday */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-9 sm:w-11 h-32 rounded-full bg-[#144E36] shadow-sm"></div>
+              <span className="text-xs font-medium text-[#9CA3AF]">M</span>
+            </div>
+
+            {/* Tuesday (With 74% Tooltip Pill Badge) */}
+            <div className="flex flex-col items-center gap-2 relative">
+              <div className="absolute -top-7 bg-white border border-[#E5E7EB] text-[#144E36] text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                74%
+              </div>
+              <div className="w-9 sm:w-11 h-28 rounded-full bg-[#46A37C]"></div>
+              <span className="text-xs font-medium text-[#9CA3AF]">T</span>
+            </div>
+
+            {/* Wednesday (Tallest Dark Pill) */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-9 sm:w-11 h-36 rounded-full bg-[#0F3927] shadow-sm"></div>
+              <span className="text-xs font-medium text-[#9CA3AF]">W</span>
+            </div>
+
+            {/* Thursday */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-9 sm:w-11 h-26 rounded-full border border-[#46A37C]/40 relative overflow-hidden bg-[#FAFAFA]">
+                <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,#46A37C_0,#46A37C_1.5px,transparent_0,transparent_6px)] opacity-40"></div>
+              </div>
+              <span className="text-xs font-medium text-[#9CA3AF]">T</span>
+            </div>
+
+            {/* Friday */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-9 sm:w-11 h-20 rounded-full border border-[#46A37C]/40 relative overflow-hidden bg-[#FAFAFA]">
+                <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,#46A37C_0,#46A37C_1.5px,transparent_0,transparent_6px)] opacity-35"></div>
+              </div>
+              <span className="text-xs font-medium text-[#9CA3AF]">F</span>
+            </div>
+
+            {/* Saturday */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-9 sm:w-11 h-28 rounded-full border border-[#46A37C]/40 relative overflow-hidden bg-[#FAFAFA]">
+                <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,#46A37C_0,#46A37C_1.5px,transparent_0,transparent_6px)] opacity-45"></div>
+              </div>
+              <span className="text-xs font-medium text-[#9CA3AF]">S</span>
+            </div>
           </div>
         </div>
 
-        {/* Real Recent Athletes & Transactions */}
-        <div className="lg:col-span-2 bg-[#121215] border border-[#27272A] rounded-2xl p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="font-montserrat text-lg font-bold text-white uppercase tracking-tight">Recent Athletes &amp; Transactions</h2>
-              <p className="font-mono text-[10px] text-[#71717A] uppercase tracking-wider mt-0.5">Live from MongoDB Database</p>
+        {/* Reminders Card (3 Cols) */}
+        <div className="lg:col-span-3 bg-white border border-[#F0F2F4] rounded-[24px] p-6 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 className="font-montserrat text-base font-bold text-[#111827] mb-4">
+              Reminders
+            </h3>
+            
+            <div className="mt-2">
+              <h4 className="font-montserrat font-bold text-lg text-[#111827] leading-snug">
+                Gym Floor &amp; Shift Briefing
+              </h4>
+              <p className="text-xs text-[#9CA3AF] mt-1.5 font-mono">
+                Time : 02.00 pm - 04.00 pm
+              </p>
             </div>
-            <Link href="/admin/members" className="font-mono text-xs text-[#D0FF00] hover:underline flex items-center gap-1">
-              View All Directory <span className="material-symbols-outlined text-sm">arrow_forward</span>
+          </div>
+
+          <div className="pt-6">
+            <button
+              onClick={() => alert('Broadcast notice sent to all active trainers and athletes.')}
+              className="w-full bg-[#144E36] hover:bg-[#0F3927] text-white py-3 px-4 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-98"
+            >
+              <span className="material-symbols-outlined text-[18px]">videocam</span>
+              Start Meeting
+            </button>
+          </div>
+        </div>
+
+        {/* Training Plans / Project List (4 Cols) */}
+        <div className="lg:col-span-4 bg-white border border-[#F0F2F4] rounded-[24px] p-6 shadow-sm flex flex-col justify-between">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-montserrat text-base font-bold text-[#111827]">
+              Training Plans
+            </h3>
+            <Link
+              href="/admin/members"
+              className="border border-[#E5E7EB] hover:bg-[#F9FAFB] text-xs font-semibold px-3 py-1 rounded-full text-[#374151] transition-colors"
+            >
+              + New
             </Link>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3.5 my-auto">
+            {/* Plan Item 1 */}
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center font-bold text-sm shrink-0">
+                //
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-[#111827] truncate">Strength &amp; Conditioning</p>
+                <p className="text-[11px] text-[#9CA3AF]">Active Roster: 18 Athletes</p>
+              </div>
+            </div>
+
+            {/* Plan Item 2 */}
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-[#ECFDF5] text-[#059669] flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[18px]">fitness_center</span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-[#111827] truncate">Personal Training (1-on-1)</p>
+                <p className="text-[11px] text-[#9CA3AF]">Gold &amp; Platinum tier</p>
+              </div>
+            </div>
+
+            {/* Plan Item 3 */}
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-[#FFFBEB] text-[#D97706] flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[18px]">bolt</span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-[#111827] truncate">CrossFit &amp; High Intensity</p>
+                <p className="text-[11px] text-[#9CA3AF]">Morning &amp; Evening batch</p>
+              </div>
+            </div>
+
+            {/* Plan Item 4 */}
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-[#FDF2F8] text-[#DB2777] flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[18px]">speed</span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-[#111827] truncate">Fat Shredder &amp; Cardio</p>
+                <p className="text-[11px] text-[#9CA3AF]">Includes body fat tracking</p>
+              </div>
+            </div>
+
+            {/* Plan Item 5 */}
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-[#F5F3FF] text-[#7C3AED] flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[18px]">restaurant</span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-[#111827] truncate">Nutrition &amp; Macro Masterclass</p>
+                <p className="text-[11px] text-[#9CA3AF]">Weekly meal plans &amp; diets</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Row Widgets (Team Collaboration + Gauge Chart + Time Tracker) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        
+        {/* Team Collaboration / Athletes List (5 Cols) */}
+        <div className="lg:col-span-5 bg-white border border-[#F0F2F4] rounded-[24px] p-6 shadow-sm flex flex-col justify-between">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-montserrat text-base font-bold text-[#111827]">
+              Team Collaboration
+            </h3>
+            <Link
+              href="/admin/members"
+              className="border border-[#E5E7EB] hover:bg-[#F9FAFB] text-xs font-semibold px-3 py-1 rounded-full text-[#374151] transition-colors"
+            >
+              + Add Member
+            </Link>
+          </div>
+
+          <div className="space-y-3.5">
             {stats.recentPayments?.length > 0 ? (
-              stats.recentPayments.map((p, i) => {
+              stats.recentPayments.slice(0, 4).map((p, idx) => {
+                const avatarColors = [
+                  'bg-[#FEE2E2] text-[#DC2626]',
+                  'bg-[#FEF3C7] text-[#D97706]',
+                  'bg-[#E0E7FF] text-[#4F46E5]',
+                  'bg-[#F3E8FF] text-[#9333EA]',
+                ];
+                const avatarColor = avatarColors[idx % avatarColors.length];
                 const isPaid = p.status === 'paid';
                 const isOverdue = p.status === 'overdue';
+
                 return (
-                  <div key={i} className="flex justify-between items-center p-3.5 bg-[#18181B] border border-[#27272A] hover:border-[#3F3F46] rounded-xl transition-colors">
+                  <div key={idx} className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 border ${
-                        isPaid 
-                          ? 'bg-[#D0FF00]/10 border-[#D0FF00]/30 text-[#D0FF00]' 
-                          : isOverdue 
-                            ? 'bg-[#FF2E54]/10 border-[#FF2E54]/30 text-[#FF2E54]' 
-                            : 'bg-[#F59E0B]/10 border-[#F59E0B]/30 text-[#F59E0B]'
-                      }`}>
+                      <div className={`w-9 h-9 rounded-full ${avatarColor} font-bold text-xs flex items-center justify-center shrink-0`}>
                         {p.name ? p.name.charAt(0).toUpperCase() : 'A'}
                       </div>
-                      <div className="truncate">
-                        <p className="font-inter font-semibold text-white text-sm truncate">{p.name}</p>
-                        <p className="font-mono text-[10px] text-[#71717A] truncate">
-                          {p.plan} Plan • {p.email}
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-[#111827] truncate">{p.name}</p>
+                        <p className="text-[11px] text-[#9CA3AF] truncate">
+                          Working on {p.plan} Training Protocol
                         </p>
                       </div>
                     </div>
 
-                    <div className="text-right shrink-0 ml-4">
-                      <p className={`font-montserrat font-black text-sm ${isPaid ? 'text-[#D0FF00]' : isOverdue ? 'text-[#FF2E54]' : 'text-[#F59E0B]'}`}>
-                        {isPaid ? '+' : ''}PKR {(p.amount || 0).toLocaleString()}
-                      </p>
-                      <div className="flex items-center justify-end gap-1.5 mt-0.5">
-                        <span className={`font-mono text-[9px] font-bold px-1.5 py-0.2 rounded uppercase ${
-                          isPaid ? 'bg-[#D0FF00]/10 text-[#D0FF00]' : isOverdue ? 'bg-[#FF2E54]/10 text-[#FF2E54]' : 'bg-[#F59E0B]/10 text-[#F59E0B]'
-                        }`}>
-                          {p.status}
-                        </span>
-                        <span className="font-mono text-[9px] text-[#71717A]">
-                          {new Date(p.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </span>
-                      </div>
-                    </div>
+                    <span className={`text-[10px] font-medium px-2.5 py-0.5 rounded-full shrink-0 ${
+                      isPaid
+                        ? 'bg-[#ECFDF5] text-[#059669]'
+                        : isOverdue
+                          ? 'bg-[#FEF2F2] text-[#DC2626]'
+                          : 'bg-[#FEF3C7] text-[#D97706]'
+                    }`}>
+                      {isPaid ? 'Completed' : isOverdue ? 'Pending' : 'In Progress'}
+                    </span>
                   </div>
                 );
               })
             ) : (
-              <div className="text-center py-10">
-                <span className="material-symbols-outlined text-4xl text-[#27272A] mb-2">inbox</span>
-                <p className="font-inter text-sm text-[#71717A]">No transactions recorded yet.</p>
+              <div className="py-8 text-center text-xs text-[#9CA3AF]">
+                No recent athlete activity recorded yet.
               </div>
             )}
           </div>
         </div>
+
+        {/* Project Progress Gauge Chart (4 Cols) */}
+        <div className="lg:col-span-4 bg-white border border-[#F0F2F4] rounded-[24px] p-6 shadow-sm flex flex-col justify-between">
+          <h3 className="font-montserrat text-base font-bold text-[#111827] mb-2">
+            Project Progress
+          </h3>
+
+          {/* Semi-circular gauge */}
+          <div className="relative flex flex-col items-center justify-center my-auto">
+            <svg viewBox="0 0 200 110" className="w-52 h-28 overflow-visible">
+              {/* Background track arc */}
+              <path
+                d="M 20 100 A 80 80 0 0 1 180 100"
+                fill="none"
+                stroke="#F3F4F6"
+                strokeWidth="22"
+                strokeLinecap="round"
+              />
+              {/* Striped progress segment */}
+              <path
+                d="M 130 35 A 80 80 0 0 1 180 100"
+                fill="none"
+                stroke="url(#diagonal-stripe)"
+                strokeWidth="22"
+                strokeLinecap="round"
+              />
+              {/* Active Dark Green Arc */}
+              <path
+                d="M 20 100 A 80 80 0 0 1 135 32"
+                fill="none"
+                stroke="#144E36"
+                strokeWidth="22"
+                strokeLinecap="round"
+              />
+            </svg>
+
+            {/* Gauge center percentage */}
+            <div className="text-center -mt-6">
+              <p className="font-montserrat text-3xl md:text-4xl font-black text-[#111827] leading-none">
+                {activePercent}%
+              </p>
+              <p className="text-xs text-[#9CA3AF] mt-1">Project Ended</p>
+            </div>
+          </div>
+
+          {/* Legend */}
+          <div className="flex items-center justify-center gap-4 pt-4 border-t border-[#F3F4F6] text-[11px] text-[#6B7280]">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#144E36]"></span>
+              <span>Completed</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#46A37C]"></span>
+              <span>In Progress</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#94D2BD]"></span>
+              <span>Pending</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Time Tracker Card (3 Cols) */}
+        <div className="lg:col-span-3 bg-gradient-to-br from-[#0A291C] via-[#0F3927] to-[#081F15] text-white rounded-[24px] p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
+          {/* Subtle wavy circles matching Donezo card */}
+          <div className="absolute -right-8 -bottom-8 w-44 h-44 rounded-full border border-white/10 pointer-events-none"></div>
+          <div className="absolute -right-14 -bottom-14 w-56 h-56 rounded-full border border-white/10 pointer-events-none"></div>
+          <div className="absolute -right-20 -bottom-20 w-68 h-68 rounded-full border border-white/5 pointer-events-none"></div>
+
+          <div>
+            <p className="text-xs font-medium text-white/80">Time Tracker</p>
+          </div>
+
+          <div className="my-6">
+            <p className="font-mono text-3xl md:text-4xl font-black tracking-wider text-white">
+              {formatTimer(seconds)}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setTimerRunning(!timerRunning)}
+              className="w-10 h-10 rounded-full bg-white text-[#111827] flex items-center justify-center shadow hover:bg-gray-100 transition-transform active:scale-95"
+              title={timerRunning ? 'Pause' : 'Resume'}
+            >
+              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                {timerRunning ? 'pause' : 'play_arrow'}
+              </span>
+            </button>
+            <button
+              onClick={() => {
+                setTimerRunning(false);
+                setSeconds(0);
+              }}
+              className="w-10 h-10 rounded-full bg-[#EF4444] text-white flex items-center justify-center shadow hover:bg-red-600 transition-transform active:scale-95"
+              title="Reset Timer"
+            >
+              <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                stop
+              </span>
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   );
